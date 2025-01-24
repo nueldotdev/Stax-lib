@@ -1,0 +1,29 @@
+{
+  "name": "stax-lib",
+  "version": "1.0.0",
+  "description": "This is a minimal JS library I built to make it easier to create HTML elements within JS",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nueldotdev/Stax-lib.git"
+  },
+  "keywords": [
+    "[\"Elements\"",
+    "\"UI\"",
+    "\"Web\"",
+    "\"HTML\"]"
+  ],
+  "author": "nueldotdev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nueldotdev/Stax-lib/issues"
+  },
+  "homepage": "https://github.com/nueldotdev/Stax-lib#readme",
+  "devDependencies": {
+    "eslint": "^9.19.0",
+    "prettier": "^3.4.2"
+  }
+}
