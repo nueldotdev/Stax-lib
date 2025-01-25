@@ -1,6 +1,6 @@
 {
   "name": "stax-lib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is a minimal JS library I built to make it easier to create HTML elements within JS",
   "main": "src/index.js",
   "scripts": {
