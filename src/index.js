@@ -1,5 +1,8 @@
 // Subscription Map: Tracks listeners for state updates
+import Store from "./core/store";
+
 const subscriptions = new Map();
+const store = new Store();
 
 function onValueChange(obj, key, callback) {
   const objectKey = `${obj}-${key}`; // Unique identifier for the object and key
@@ -46,41 +49,31 @@ function createStaxElement(tag, props) {
   }
 
   // Handle dynamic children with placeholders
-  if (typeof props.children === "string") {
-    const regex = /&\(([^)]+)\)/g; // Matches &(object.key)
-    let matches = [...props.children.matchAll(regex)];
+  if (props.children) {
+    if (typeof props.children === 'string') {
+      const regex = /&\(([^)]+)\)/g;
+      const initialContent = props.children.replace(regex, (_, expr) => {
+        const [bindObj, bindKey] = expr.split('.');
+        return props.bindings?.[bindObj]?.[bindKey] ?? '';
+      });
 
-    if (matches.length > 0) {
-      let initialContent = props.children;
+      element.textContent = initialContent;
 
-      matches.forEach((match) => {
-        const [placeholder, expression] = match;
-
-        // Parse the object and key path dynamically
-        const parts = expression.split(".");
-        const obj = props.bindings?.[parts[0]]; // Look up in `bindings`
-        const key = parts[1];
-
-        if (obj) {
-          // Replace placeholder with the current value
-          initialContent = initialContent.replace(placeholder, obj[key]);
-
-          // Bind updates to reactivity
-          onValueChange(obj, key, () => {
+      // Subscribe to changes in the store
+      props.children.replace(regex, (_, expr) => {
+        const [bindObj, bindKey] = expr.split('.');
+        if (props.bindings?.[bindObj]) {
+          store.subscribe(bindObj, (newValue) => {
             element.textContent = props.children.replace(regex, (_, expr) => {
-              const [bindObj, bindKey] = expr.split(".");
-              return props.bindings?.[bindObj]?.[bindKey] ?? "";
+              const [bindObj, bindKey] = expr.split('.');
+              return newValue[bindKey] ?? '';
             });
           });
         }
       });
-
-      element.textContent = initialContent; // Set initial content
     } else {
-      element.textContent = props.children; // Static content
+      props.children.forEach((child) => element.appendChild(child));
     }
-  } else if (props.children) {
-    props.children.forEach((child) => element.appendChild(child));
   }
 
   if (props.id) {
@@ -133,7 +126,7 @@ function createStaxElement(tag, props) {
   return element;
 }
 
-export class Stax {
+class Stax {
   component(renderFn) {
     return renderFn();
   }
@@ -208,5 +201,8 @@ export class Stax {
   }
 }
 
+const stax = new Stax();
+
+export { stax, store };
 
 // module.exports = new Stax();
